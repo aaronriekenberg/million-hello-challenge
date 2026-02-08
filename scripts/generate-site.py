@@ -82,8 +82,16 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Million Hello Challenge - Benchmark Results</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script>
+  // Apply theme immediately to prevent flash
+  (function() {
+    const saved = localStorage.getItem('theme');
+    if (saved) { document.documentElement.setAttribute('data-theme', saved); }
+    else if (window.matchMedia('(prefers-color-scheme: light)').matches) { document.documentElement.setAttribute('data-theme', 'light'); }
+  })();
+</script>
 <style>
-  :root {
+  :root, [data-theme="dark"] {
     --bg-primary: #0d1117;
     --bg-secondary: #161b22;
     --bg-card: #1c2333;
@@ -98,6 +106,36 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
     --accent-blue: #58a6ff;
     --accent-green: #3fb950;
     --accent-orange: #d29922;
+    --hero-gradient: linear-gradient(135deg, #0d1117 0%, #1a1f35 50%, #0d1117 100%);
+    --chart-text: #8b949e;
+    --chart-grid: rgba(48,54,61,0.5);
+    --tooltip-bg: #1c2333;
+    --tooltip-text: #e6edf3;
+    --tooltip-border: #30363d;
+    --hover-row: rgba(88, 166, 255, 0.04);
+  }
+  [data-theme="light"] {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f6f8fa;
+    --bg-card: #eef1f5;
+    --border: #d0d7de;
+    --text-primary: #1f2328;
+    --text-secondary: #656d76;
+    --accent-rust: #b35a2a;
+    --accent-go: #007d9c;
+    --accent-kotlin: #7f52ff;
+    --accent-node: #3c7a2f;
+    --accent-python: #2b5b84;
+    --accent-blue: #0969da;
+    --accent-green: #1a7f37;
+    --accent-orange: #9a6700;
+    --hero-gradient: linear-gradient(135deg, #f0f3f6 0%, #dfe6ed 50%, #f0f3f6 100%);
+    --chart-text: #656d76;
+    --chart-grid: rgba(208,215,222,0.6);
+    --tooltip-bg: #ffffff;
+    --tooltip-text: #1f2328;
+    --tooltip-border: #d0d7de;
+    --hover-row: rgba(9, 105, 218, 0.04);
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -108,19 +146,48 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
     min-height: 100vh;
   }
   .hero {
-    background: linear-gradient(135deg, #0d1117 0%, #1a1f35 50%, #0d1117 100%);
+    background: var(--hero-gradient);
     border-bottom: 1px solid var(--border);
     padding: 3rem 2rem;
     text-align: center;
+    position: relative;
   }
   .hero h1 {
     font-size: 2.5rem;
     font-weight: 700;
-    background: linear-gradient(135deg, #58a6ff, #a97bff, #dea584);
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-kotlin), var(--accent-rust));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     margin-bottom: 0.5rem;
+  }
+  .theme-toggle {
+    position: absolute;
+    top: 1.2rem;
+    right: 1.5rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.45rem 0.75rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 1.15rem;
+    line-height: 1;
+    transition: background 0.2s, border-color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .theme-toggle:hover {
+    background: var(--bg-card);
+    border-color: var(--accent-blue);
+    color: var(--text-primary);
+  }
+  .theme-toggle .label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
   }
   .hero p {
     color: var(--text-secondary);
@@ -242,7 +309,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
     border-bottom: none;
   }
   tbody tr:hover {
-    background: rgba(88, 166, 255, 0.04);
+    background: var(--hover-row);
   }
   .lang-badge {
     display: inline-flex;
@@ -280,6 +347,10 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
 <body>
 
 <div class="hero">
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+    <span class="icon" id="themeIcon">&#x1F319;</span>
+    <span class="label" id="themeLabel">Dark</span>
+  </button>
   <h1>Million Hello Challenge</h1>
   <p>Benchmarking 1 million HTTP &ldquo;Hello World&rdquo; requests across Rust, Go, Kotlin, Node.js, and Python in GitHub Actions.</p>
 </div>
@@ -409,38 +480,88 @@ function getVal(lang, conns, key) {
   return row ? row[key] : 0;
 }
 
-const chartDefaults = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: {
-      labels: { color: '#8b949e', font: { size: 12 }, padding: 16, usePointStyle: true, pointStyle: 'rectRounded' },
+// --- Theme toggle ---
+function getThemeColors() {
+  const s = getComputedStyle(document.documentElement);
+  return {
+    chartText: s.getPropertyValue('--chart-text').trim(),
+    chartGrid: s.getPropertyValue('--chart-grid').trim(),
+    tooltipBg: s.getPropertyValue('--tooltip-bg').trim(),
+    tooltipText: s.getPropertyValue('--tooltip-text').trim(),
+    tooltipBorder: s.getPropertyValue('--tooltip-border').trim(),
+  };
+}
+
+function currentTheme() {
+  return document.documentElement.getAttribute('data-theme') || 'dark';
+}
+
+function updateToggleUI() {
+  const dark = currentTheme() === 'dark';
+  document.getElementById('themeIcon').innerHTML = dark ? '&#x1F319;' : '&#x2600;&#xFE0F;';
+  document.getElementById('themeLabel').textContent = dark ? 'Dark' : 'Light';
+}
+
+function setTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
+  updateToggleUI();
+  rebuildCharts();
+}
+
+document.getElementById('themeToggle').addEventListener('click', () => {
+  setTheme(currentTheme() === 'dark' ? 'light' : 'dark');
+});
+
+window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', e => {
+  if (!localStorage.getItem('theme')) {
+    document.documentElement.setAttribute('data-theme', e.matches ? 'light' : 'dark');
+    updateToggleUI();
+    rebuildCharts();
+  }
+});
+
+updateToggleUI();
+
+function getChartDefaults() {
+  const tc = getThemeColors();
+  return {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        labels: { color: tc.chartText, font: { size: 12 }, padding: 16, usePointStyle: true, pointStyle: 'rectRounded' },
+      },
+      tooltip: {
+        backgroundColor: tc.tooltipBg,
+        titleColor: tc.tooltipText,
+        bodyColor: tc.tooltipText,
+        borderColor: tc.tooltipBorder,
+        borderWidth: 1,
+        padding: 10,
+        cornerRadius: 6,
+      },
     },
-    tooltip: {
-      backgroundColor: '#1c2333',
-      titleColor: '#e6edf3',
-      bodyColor: '#e6edf3',
-      borderColor: '#30363d',
-      borderWidth: 1,
-      padding: 10,
-      cornerRadius: 6,
+    scales: {
+      x: {
+        ticks: { color: tc.chartText, font: { size: 11 } },
+        grid: { color: tc.chartGrid },
+      },
+      y: {
+        ticks: { color: tc.chartText, font: { size: 11 } },
+        grid: { color: tc.chartGrid },
+        beginAtZero: true,
+      },
     },
-  },
-  scales: {
-    x: {
-      ticks: { color: '#8b949e', font: { size: 11 } },
-      grid: { color: 'rgba(48,54,61,0.5)' },
-    },
-    y: {
-      ticks: { color: '#8b949e', font: { size: 11 } },
-      grid: { color: 'rgba(48,54,61,0.5)' },
-      beginAtZero: true,
-    },
-  },
-};
+  };
+}
+
+const chartInstances = [];
 
 function makeGroupedBarChart(canvasId, metric, yLabel, opts) {
   opts = opts || {};
+  const defaults = getChartDefaults();
+  const tc = getThemeColors();
   const datasets = LANG_ORDER.map(lang => ({
     label: lang.charAt(0).toUpperCase() + lang.slice(1),
     data: CONN_LEVELS.map(c => getVal(lang, c, metric)),
@@ -450,25 +571,33 @@ function makeGroupedBarChart(canvasId, metric, yLabel, opts) {
     borderRadius: 4,
   }));
 
-  const yAxis = { ...chartDefaults.scales.y, title: { display: true, text: yLabel, color: '#8b949e' } };
+  const yAxis = { ...defaults.scales.y, title: { display: true, text: yLabel, color: tc.chartText } };
   if (opts.integerOnly) {
     yAxis.ticks = { ...yAxis.ticks, stepSize: 1, callback: v => Number.isInteger(v) ? v : '' };
   }
 
-  new Chart(document.getElementById(canvasId), {
+  const chart = new Chart(document.getElementById(canvasId), {
     type: 'bar',
     data: {
       labels: CONN_LEVELS.map(c => c + ' conns'),
       datasets,
     },
     options: {
-      ...chartDefaults,
+      ...defaults,
       scales: {
-        ...chartDefaults.scales,
+        ...defaults.scales,
         y: yAxis,
       },
     },
   });
+  chartInstances.push({ chart, canvasId, metric, yLabel, opts });
+}
+
+function rebuildCharts() {
+  const specs = chartInstances.map(c => ({ canvasId: c.canvasId, metric: c.metric, yLabel: c.yLabel, opts: c.opts }));
+  chartInstances.forEach(c => c.chart.destroy());
+  chartInstances.length = 0;
+  specs.forEach(s => makeGroupedBarChart(s.canvasId, s.metric, s.yLabel, s.opts));
 }
 
 makeGroupedBarChart('chartRPS', 'rps', 'Requests / Second');
