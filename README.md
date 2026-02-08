@@ -18,9 +18,11 @@ Consider this an upper bound on the performance of each language/framework, addi
 * Use [oha](https://crates.io/crates/oha) test tool to make 1 million HTTP requests
 * Using HTTP 1.1 with varying number of connections.
 * At oha client measure:
+  * Success rate
+  * Test duration
   * Requsts per Second (RPS)
   * Response time (P50, P99, P99.9 milliseconds)
-* At API server measure
+* At API server measure:
   * Total resident (RSS) memory usage
   * Total CPU time
   * Total threads created
