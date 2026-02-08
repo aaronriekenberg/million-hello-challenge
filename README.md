@@ -1,6 +1,6 @@
 # million-hello-challenge
 
-Benchmarking the performance of Rust, Go, Kotlin, Node.js, and Python HTTP APIs using one million Hello World requests in GitHub Actions.
+Benchmarking 1 million HTTP “Hello World” requests across Rust, Go, Kotlin, Node.js, and Python in GitHub Actions.
 
 Consider this an upper bound on the performance of each language/framework, adding more code will make things slower.
 
