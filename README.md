@@ -5,8 +5,8 @@ Benchmarking 1 million HTTP “Hello World” requests across Rust, Go, Kotlin, 
 Consider this an upper bound on the performance of each language/framework, adding more code will make things slower.
 
 # Latest results:
-* [Formatted Site](https://aaronriekenberg.github.io/million-hello-challenge/)
-* [Raw Markdown](https://github.com/aaronriekenberg/million-hello-challenge/blob/main/results/raw.md)
+* [Formatted](https://aaronriekenberg.github.io/million-hello-challenge/)
+* [Raw](https://github.com/aaronriekenberg/million-hello-challenge/blob/main/results/raw.md)
 
 # API Servers in this repo:
 * [rust-api](https://github.com/aaronriekenberg/million-hello-challenge/tree/main/rust-api) using [axum](https://github.com/tokio-rs/axum)
