@@ -34,9 +34,5 @@ jobs:
         run: ./scripts/setup.sh
       - name: Run benchmarks script
         run: ./scripts/run-benchmarks.sh
-      - name: Install matplotlib
-        run: pip install matplotlib
-      - name: Generate benchmark graphs
-        run: python3 scripts/generate-graphs.py
       - name: Commit and push results
         run: ./scripts/commit-results.sh

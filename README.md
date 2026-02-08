@@ -5,12 +5,7 @@ Benchmarking the performance of Rust, Go, Kotlin, Node.js, and Python HTTP APIs 
 Consider this an upper bound on the performance of each language/framework, adding more code will make things slower.
 
 # Latest results:
-* [latest.md](https://github.com/aaronriekenberg/million-hello-challenge/blob/main/results/latest.md)
-
-# Observations:
-* More than 10x difference in [Requests per Second](results/rps.png) from first to last.
-* Rust has the highest performance and lowest resource usage in all measurements.  Rust can do more than [100K RPS](results/rps.png) with [5 threads](results/threads.png) and [9MB to 20MB memory usage](results/memory.png).  Rust also has the best [p99 response times](results/p99.png).
-* [Kotlin/JVM memory usage](results/memory.png) is 10x to 60x larger compared to rust and go, 5x larger than node and python.
+* [raw.md](https://github.com/aaronriekenberg/million-hello-challenge/blob/main/results/raw.md)
 
 # API Servers in this repo:
 * [rust-api](https://github.com/aaronriekenberg/million-hello-challenge/tree/main/rust-api) using [axum](https://github.com/tokio-rs/axum)
