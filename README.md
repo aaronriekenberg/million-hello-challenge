@@ -5,7 +5,8 @@ Benchmarking the performance of Rust, Go, Kotlin, Node.js, and Python HTTP APIs 
 Consider this an upper bound on the performance of each language/framework, adding more code will make things slower.
 
 # Latest results:
-* [raw.md](https://github.com/aaronriekenberg/million-hello-challenge/blob/main/results/raw.md)
+* [Formatted Site](https://aaronriekenberg.github.io/million-hello-challenge/)
+* [Raw Markdown](https://github.com/aaronriekenberg/million-hello-challenge/blob/main/results/raw.md)
 
 # API Servers in this repo:
 * [rust-api](https://github.com/aaronriekenberg/million-hello-challenge/tree/main/rust-api) using [axum](https://github.com/tokio-rs/axum)
