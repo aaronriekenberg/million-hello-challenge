@@ -11,6 +11,17 @@ on:
   #   paths-ignore:
   #     - 'results/**'
 
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
   run-benchmark:
     runs-on: ubuntu-latest
@@ -36,3 +47,20 @@ jobs:
         run: ./scripts/run-benchmarks.sh
       - name: Commit and push results
         run: ./scripts/commit-results.sh
+      - name: Generate website from results
+        run: python scripts/generate-site.py
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy-pages:
+    needs: run-benchmark
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
