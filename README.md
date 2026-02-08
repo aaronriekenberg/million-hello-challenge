@@ -15,6 +15,13 @@ Consider this an upper bound on the performance of each language/framework, addi
 * [python-api](https://github.com/aaronriekenberg/million-hello-challenge/tree/main/python-api) using [tornado](https://www.tornadoweb.org/en/stable/) server, using [pre-forking](https://www.tornadoweb.org/en/stable/process.html#tornado.process.fork_processes) to use all available CPUs.
 
 # Test Setup:
-* Use [oha](https://crates.io/crates/oha) to make 1 million HTTP requests
+* Use [oha](https://crates.io/crates/oha) test tool to make 1 million HTTP requests
 * Using HTTP 1.1 with varying number of connections.
-* At API server measure response times (p50, p99, p99.9), memory usage, cpu usage, threads created, processes created.
+* At oha client measure:
+  * Requsts per Second (RPS)
+  * Response time (P50, P99, P99.9 milliseconds)
+* At API server measure
+  * Total resident (RSS) memory usage
+  * Total CPU time
+  * Total threads created
+  * Total processes created
