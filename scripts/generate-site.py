@@ -311,6 +311,14 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
       <h3>Test Duration &mdash; Seconds (lower is better)</h3>
       <div class="chart-wrapper"><canvas id="chartDuration"></canvas></div>
     </div>
+    <div class="chart-card">
+      <h3>Threads</h3>
+      <div class="chart-wrapper"><canvas id="chartThreads"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Processes</h3>
+      <div class="chart-wrapper"><canvas id="chartProcesses"></canvas></div>
+    </div>
   </div>
 
   <div class="table-section">
@@ -431,7 +439,8 @@ const chartDefaults = {
   },
 };
 
-function makeGroupedBarChart(canvasId, metric, yLabel) {
+function makeGroupedBarChart(canvasId, metric, yLabel, opts) {
+  opts = opts || {};
   const datasets = LANG_ORDER.map(lang => ({
     label: lang.charAt(0).toUpperCase() + lang.slice(1),
     data: CONN_LEVELS.map(c => getVal(lang, c, metric)),
@@ -440,6 +449,11 @@ function makeGroupedBarChart(canvasId, metric, yLabel) {
     borderWidth: 1,
     borderRadius: 4,
   }));
+
+  const yAxis = { ...chartDefaults.scales.y, title: { display: true, text: yLabel, color: '#8b949e' } };
+  if (opts.integerOnly) {
+    yAxis.ticks = { ...yAxis.ticks, stepSize: 1, callback: v => Number.isInteger(v) ? v : '' };
+  }
 
   new Chart(document.getElementById(canvasId), {
     type: 'bar',
@@ -451,7 +465,7 @@ function makeGroupedBarChart(canvasId, metric, yLabel) {
       ...chartDefaults,
       scales: {
         ...chartDefaults.scales,
-        y: { ...chartDefaults.scales.y, title: { display: true, text: yLabel, color: '#8b949e' } },
+        y: yAxis,
       },
     },
   });
@@ -462,6 +476,8 @@ makeGroupedBarChart('chartP50', 'p50', 'Milliseconds');
 makeGroupedBarChart('chartP99', 'p99', 'Milliseconds');
 makeGroupedBarChart('chartMem', 'memory_mb', 'MB');
 makeGroupedBarChart('chartDuration', 'test_seconds', 'Seconds');
+makeGroupedBarChart('chartThreads', 'threads', 'Threads');
+makeGroupedBarChart('chartProcesses', 'processes', 'Processes', { integerOnly: true });
 </script>
 </body>
 </html>"""
