@@ -352,7 +352,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
     <span class="label" id="themeLabel">Dark</span>
   </button>
   <h1>Million Hello Challenge</h1>
-  <p>Benchmarking 1 million HTTP &ldquo;Hello World&rdquo; requests across Rust, Go, Kotlin, Node.js, and Python in GitHub Actions.</p>
+  <p>Benchmarking 1 million HTTP &ldquo;Hello World&rdquo; requests across Rust, Go, Kotlin, Node.js, and Python servers in GitHub Actions.</p>
 </div>
 
 <div class="container">
