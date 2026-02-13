@@ -7,9 +7,6 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
-	"runtime"
-	"runtime/debug"
-	"strings"
 )
 
 func testHandlerFunc() http.HandlerFunc {
@@ -38,28 +35,16 @@ func runHTTPServer() {
 		Addr:    addr,
 		Handler: mux,
 	}
-	httpServer.ListenAndServe()
+
+	err := httpServer.ListenAndServe()
+
+	slog.Error("httpServer.ListenAndServe error",
+		"error", err,
+	)
 }
 
 func main() {
-	defer func() {
-		if err := recover(); err != nil {
-			slog.Error("panic in main",
-				"error", err,
-			)
-			fmt.Fprintf(os.Stderr, "stack trace:\n%v", string(debug.Stack()))
-			os.Exit(1)
-		}
-	}()
-
 	setupSlog()
-
-	slog.Info("begin main",
-		"GOMAXPROCS", runtime.GOMAXPROCS(0),
-		"NumCPU", runtime.NumCPU(),
-		"buildInfoMap", buildInfoMap(),
-		"goEnvironVariables", goEnvironVariables(),
-	)
 
 	runHTTPServer()
 }
@@ -88,30 +73,4 @@ func setupSlog() {
 	slog.Info("setupSlog",
 		"configuredLevel", level,
 	)
-}
-
-func buildInfoMap() map[string]string {
-	buildInfoMap := make(map[string]string)
-
-	if buildInfo, ok := debug.ReadBuildInfo(); ok {
-		buildInfoMap["GoVersion"] = buildInfo.GoVersion
-		for _, setting := range buildInfo.Settings {
-			if strings.HasPrefix(setting.Key, "GO") ||
-				strings.HasPrefix(setting.Key, "vcs") {
-				buildInfoMap[setting.Key] = setting.Value
-			}
-		}
-	}
-
-	return buildInfoMap
-}
-
-func goEnvironVariables() []string {
-	var goVars []string
-	for _, env := range os.Environ() {
-		if strings.HasPrefix(env, "GO") {
-			goVars = append(goVars, env)
-		}
-	}
-	return goVars
 }
