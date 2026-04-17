@@ -12,6 +12,12 @@ export OUTPUT_FILE=results/raw.md
 echo "OUTPUT_FILE=$OUTPUT_FILE"
 
 
+# run nginx benchmarks
+export API_COMMAND="nginx -p $REPO_ROOT/nginx-api/ -c $REPO_ROOT/nginx-api/nginx.conf"
+export TEST_NAME=nginx
+$SCRIPT_DIR/run-api-benchmark.sh
+
+
 # build rust
 echo "rustup update"
 rustup update
