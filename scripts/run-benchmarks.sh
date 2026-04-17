@@ -12,6 +12,12 @@ export OUTPUT_FILE=results/raw.md
 echo "OUTPUT_FILE=$OUTPUT_FILE"
 
 
+# run nginx benchmarks
+export API_COMMAND="nginx -p $REPO_ROOT/nginx-api/ -c $REPO_ROOT/nginx-api/nginx.conf"
+export TEST_NAME=nginx
+$SCRIPT_DIR/run-api-benchmark.sh
+
+
 # build rust
 echo "rustup update"
 rustup update
@@ -87,12 +93,6 @@ pip install tornado
 # run python benchmarks
 export API_COMMAND='python python-api/server.py'
 export TEST_NAME=python
-$SCRIPT_DIR/run-api-benchmark.sh
-
-
-# run nginx benchmarks
-export API_COMMAND="nginx -p $REPO_ROOT/nginx-api/ -c $REPO_ROOT/nginx-api/nginx.conf"
-export TEST_NAME=nginx
 $SCRIPT_DIR/run-api-benchmark.sh
 
 echo "end run-benchmarks.sh"
