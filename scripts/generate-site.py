@@ -326,6 +326,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
   .lang-badge.kotlin { background: rgba(169,123,255,0.15); color: var(--accent-kotlin); }
   .lang-badge.node   { background: rgba(95,160,78,0.15);   color: var(--accent-node); }
   .lang-badge.python { background: rgba(53,114,165,0.15);  color: var(--accent-python); }
+  .lang-badge.nginx  { background: rgba(0,158,73,0.15);    color: #009e49; }
   .num-cell { font-variant-numeric: tabular-nums; text-align: right; }
   footer {
     text-align: center;
@@ -352,7 +353,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
     <span class="label" id="themeLabel">Dark</span>
   </button>
   <h1>Million Hello Challenge</h1>
-  <p>Benchmarking 1 million HTTP &ldquo;Hello World&rdquo; requests across Rust, Go, Kotlin, Node.js, and Python servers in GitHub Actions.</p>
+  <p>Benchmarking 1 million HTTP &ldquo;Hello World&rdquo; requests across nginx, Rust, Go, Kotlin, Node.js, and Python servers in GitHub Actions.</p>
 </div>
 
 <div class="container">
@@ -429,6 +430,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
 const DATA = __DATA_PLACEHOLDER__;
 
 const LANG_COLORS = {
+  nginx:  { bg: 'rgba(0,158,73,0.85)',     border: '#009e49' },
   rust:   { bg: 'rgba(222,165,132,0.85)', border: '#dea584' },
   go:     { bg: 'rgba(0,173,216,0.85)',   border: '#00add8' },
   kotlin: { bg: 'rgba(169,123,255,0.85)', border: '#a97bff' },
@@ -436,7 +438,7 @@ const LANG_COLORS = {
   python: { bg: 'rgba(53,114,165,0.85)',  border: '#3572a5' },
 };
 
-const LANG_ORDER = ['rust', 'go', 'kotlin', 'node', 'python'];
+const LANG_ORDER = ['nginx', 'rust', 'go', 'kotlin', 'node', 'python'];
 const CONN_LEVELS = [200, 400, 800];
 
 // --- Meta bar ---
