@@ -13,7 +13,7 @@ echo "OUTPUT_FILE=$OUTPUT_FILE"
 
 
 # run nginx benchmarks
-export API_COMMAND="nginx -p $REPO_ROOT/nginx-api/ -c $REPO_ROOT/nginx-api/nginx.conf"
+export API_COMMAND="nginx -e stderr -p $REPO_ROOT/nginx-api/ -c $REPO_ROOT/nginx-api/nginx.conf"
 export TEST_NAME=nginx
 $SCRIPT_DIR/run-api-benchmark.sh
 
