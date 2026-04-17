@@ -1,6 +1,6 @@
 # million-hello-challenge
 
-Benchmarking 1 million HTTP “Hello World” requests across Rust, Go, Kotlin, Node.js, and Python servers in GitHub Actions.
+Benchmarking 1 million HTTP “Hello World” requests across Rust, Go, Kotlin, Node.js, Python, and nginx servers in GitHub Actions.
 
 Consider this an upper bound on the performance of each language/framework, adding more code will make things slower.
 
@@ -14,6 +14,7 @@ Consider this an upper bound on the performance of each language/framework, addi
 * [kotlin-api](https://github.com/aaronriekenberg/million-hello-challenge/tree/main/kotlin-api) using [http4k](https://www.http4k.org) with [Helidon](https://helidon.io) server using virtual threads, Java 25.
 * [node-api](https://github.com/aaronriekenberg/million-hello-challenge/tree/main/node-api) using builtin `node:http` server.
 * [python-api](https://github.com/aaronriekenberg/million-hello-challenge/tree/main/python-api) using [tornado](https://www.tornadoweb.org/en/stable/) server, using [pre-forking](https://www.tornadoweb.org/en/stable/process.html#tornado.process.fork_processes) to use all available CPUs.
+* [nginx-api](https://github.com/aaronriekenberg/million-hello-challenge/tree/main/nginx-api) using [nginx](https://nginx.org).
 
 # Test Setup:
 * Use [oha](https://crates.io/crates/oha) test tool to make 1 million HTTP requests

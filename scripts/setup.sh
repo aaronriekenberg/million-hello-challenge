@@ -1,12 +1,31 @@
 #!/bin/bash
 
 set -e
+set -o pipefail
 
 echo "begin setup.sh"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$REPO_ROOT"
+
+echo "installing latest stable nginx from nginx.org"
+sudo apt-get update
+sudo apt-get install -y curl gpg lsb-release ca-certificates ubuntu-keyring
+curl -fsSL https://nginx.org/keys/nginx_signing.key | gpg --dearmor \
+  | sudo tee /usr/share/keyrings/nginx-archive-keyring.gpg >/dev/null
+echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] \
+https://nginx.org/packages/ubuntu $(lsb_release -cs) nginx" \
+  | sudo tee /etc/apt/sources.list.d/nginx.list >/dev/null
+echo -e "Package: *\nPin: origin nginx.org\nPin-Priority: 900\n" \
+  | sudo tee /etc/apt/preferences.d/99nginx >/dev/null
+sudo apt-get update
+sudo apt-get install -y nginx
+echo "verify nginx package source is nginx.org"
+apt-cache policy nginx | tee /tmp/nginx-policy.txt
+grep -q "nginx.org/packages/ubuntu" /tmp/nginx-policy.txt
+echo "nginx version:"
+nginx -v
 
 echo "wget https://github.com/hatoo/oha/releases/latest/download/oha-linux-amd64"
 wget https://github.com/hatoo/oha/releases/latest/download/oha-linux-amd64
