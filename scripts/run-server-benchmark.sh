@@ -2,7 +2,7 @@
 
 set -e
 
-echo "begin run-api-benchmark.sh"
+echo "begin run-server-benchmark.sh"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -15,17 +15,17 @@ for NUM_CONNECTIONS in 200 400 800; do
 
     echo "NUM_CONNECTIONS=$NUM_CONNECTIONS"
 
-    echo "runnning API_COMMAND = $API_COMMAND"
+    echo "runnning SERVER_COMMAND = $SERVER_COMMAND"
 
-    $API_COMMAND &
-    API_PID=$!
+    $SERVER_COMMAND &
+    SERVER_PID=$!
 
     sleep 1
 
-    echo "$TEST_NAME running PID $API_PID"
+    echo "$TEST_NAME running PID $SERVER_PID"
 
-    echo pstree -pa $API_PID
-    pstree -pa $API_PID
+    echo pstree -pa $SERVER_PID
+    pstree -pa $SERVER_PID
 
     rm -f oha_output.json
     echo "./oha --http-version=1.1 -n 1000000 -c $NUM_CONNECTIONS --no-tui --output-format json 'http://localhost:8080/test'"
@@ -58,21 +58,21 @@ for NUM_CONNECTIONS in 200 400 800; do
     REQUEST_P999=$(bc <<< "scale=4; $REQUEST_P999 * 1000 / 1")
     echo "REQUEST_P999 = $REQUEST_P999"
 
-    API_THREADS=0
-    API_PROCESSES=0
+    SERVER_THREADS=0
+    SERVER_PROCESSES=0
     RSS_KB=0
     TOTAL_CPU_TIME="00:00:00"
 
-    for CHILD_PID in $(ps --no-headers -o pid --ppid $API_PID); do
+    for CHILD_PID in $(ps --no-headers -o pid --ppid $SERVER_PID); do
         echo "CHILD_PID=$CHILD_PID"
-        API_PROCESSES=$((API_PROCESSES+1))
+        SERVER_PROCESSES=$((SERVER_PROCESSES+1))
 
         echo "ps --no-headers -o pid,cputime,nlwp,rss,cmd -q $CHILD_PID"
         ps --no-headers -o pid,cputime,nlwp,rss,cmd -q $CHILD_PID
 
         CHILD_THREADS=$(ps -eLf -q $CHILD_PID | grep -v PID | wc -l)
         echo "CHILD_THREADS=$CHILD_THREADS"
-        API_THREADS=$((API_THREADS+CHILD_THREADS))
+        SERVER_THREADS=$((SERVER_THREADS+CHILD_THREADS))
 
         CHILD_RSS_KB=$(ps -eo pid,user,rss,time -q $CHILD_PID | tail -1 | awk '{print $3}' )
         echo "CHILD_RSS_KB=$CHILD_RSS_KB"
@@ -84,19 +84,19 @@ for NUM_CONNECTIONS in 200 400 800; do
         TOTAL_CPU_TIME=$($SCRIPT_DIR/sum-times.sh $TOTAL_CPU_TIME $CHILD_CPU_TIME)
     done
 
-    PARENT_PID=$API_PID
+    PARENT_PID=$SERVER_PID
     echo "PARENT_PID=$PARENT_PID"
 
     echo "ps --no-headers -o pid,cputime,nlwp,rss,cmd -q $PARENT_PID"
     ps --no-headers -o pid,cputime,nlwp,rss,cmd -q $PARENT_PID
 
-    API_PROCESSES=$((API_PROCESSES+1))
-    echo "API_PROCESSES=$API_PROCESSES"
+    SERVER_PROCESSES=$((SERVER_PROCESSES+1))
+    echo "SERVER_PROCESSES=$SERVER_PROCESSES"
 
     PARENT_THREADS=$(ps -eLf -q $PARENT_PID | grep -v PID | wc -l)
     echo "PARENT_THREADS=$PARENT_THREADS"
-    API_THREADS=$((API_THREADS+PARENT_THREADS))
-    echo "API_THREADS=$API_THREADS"
+    SERVER_THREADS=$((SERVER_THREADS+PARENT_THREADS))
+    echo "SERVER_THREADS=$SERVER_THREADS"
 
     PARENT_RSS_KB=$(ps -eo pid,user,rss,time -q $PARENT_PID | tail -1 | awk '{print $3}' )
     echo "PARENT_RSS_KB=$PARENT_RSS_KB"
@@ -113,15 +113,15 @@ for NUM_CONNECTIONS in 200 400 800; do
     echo "RSS_MB=$RSS_MB"
 
     # kill child pids
-    for CHILD_PID in $(ps --no-headers -o pid --ppid $API_PID); do
+    for CHILD_PID in $(ps --no-headers -o pid --ppid $SERVER_PID); do
         echo "kill child pid $CHILD_PID"
         kill $CHILD_PID
     done
 
-    echo kill $API_PID
-    kill $API_PID
+    echo kill $SERVER_PID
+    kill $SERVER_PID
 
-    echo "| $TEST_NAME | $NUM_CONNECTIONS | $SUCCESS_RATE | $TEST_SECONDS | $RPS | $REQUEST_P50 | $REQUEST_P99 | $REQUEST_P999 | $RSS_MB | $TOTAL_CPU_TIME | $API_THREADS | $API_PROCESSES |" >> $OUTPUT_FILE
+    echo "| $TEST_NAME | $NUM_CONNECTIONS | $SUCCESS_RATE | $TEST_SECONDS | $RPS | $REQUEST_P50 | $REQUEST_P99 | $REQUEST_P999 | $RSS_MB | $TOTAL_CPU_TIME | $SERVER_THREADS | $SERVER_PROCESSES |" >> $OUTPUT_FILE
 
     sleep 1
 
