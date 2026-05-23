@@ -61,8 +61,8 @@ echo "| $CPU_MODEL | $NUM_CPUS | $TOTAL_MEMORY |" >> $OUTPUT_FILE
 echo >> $OUTPUT_FILE
 
 echo '## Benchmarks of 1 Million Requests' >> $OUTPUT_FILE
-echo '| Test Name | HTTP Conns | Success Rate | Test Seconds | Requests per Second | P50 Millis | P99 Millis | P99.9 Millis | API Memory MB | API CPU Time | API Threads | API Processes |' >> $OUTPUT_FILE
-echo '| --------- | ---------- | ------------ | ------------ | ------------------- | ---------- | ---------- | ------------ | ------------- | ------------ | ----------- | ------------- |' >> $OUTPUT_FILE
+echo '| Test Name | HTTP Conns | Success Rate | Test Seconds | Requests per Second | P50 Millis | P99 Millis | P99.9 Millis | Server Memory MB | Server CPU Time | Server Threads | Server Processes |' >> $OUTPUT_FILE
+echo '| --------- | ---------- | ------------ | ------------ | ------------------- | ---------- | ---------- | ------------ | ---------------- | --------------- | -------------- | ---------------- |' >> $OUTPUT_FILE
 
 echo "created md header OUTPUT_FILE=$OUTPUT_FILE"
 cat $OUTPUT_FILE
