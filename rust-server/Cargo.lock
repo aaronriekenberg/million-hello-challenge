@@ -335,7 +335,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "rust-api"
+name = "rust-server"
 version = "0.1.0"
 dependencies = [
  "axum",
