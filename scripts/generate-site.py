@@ -384,11 +384,11 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
       <div class="chart-wrapper"><canvas id="chartDuration"></canvas></div>
     </div>
     <div class="chart-card">
-      <h3>Threads</h3>
+      <h3>Total Threads</h3>
       <div class="chart-wrapper"><canvas id="chartThreads"></canvas></div>
     </div>
     <div class="chart-card">
-      <h3>Processes</h3>
+      <h3>Total Processes</h3>
       <div class="chart-wrapper"><canvas id="chartProcesses"></canvas></div>
     </div>
   </div>
@@ -399,7 +399,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
       <table>
         <thead>
           <tr>
-            <th>Language</th>
+            <th>Test</th>
             <th>Connections</th>
             <th>Success</th>
             <th>Duration (s)</th>
