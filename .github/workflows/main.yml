@@ -40,7 +40,7 @@ jobs:
           node-version: 26
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.15'
+          python-version: '3.14'
       - name: Run setup script
         run: ./scripts/setup.sh
       - name: Run benchmarks script
